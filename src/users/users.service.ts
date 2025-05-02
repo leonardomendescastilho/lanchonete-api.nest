@@ -1,8 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from './users.entity';
 import { Repository } from 'typeorm';
 import { CreateUsersDto } from './users.dto';
+import { Users } from './users.entity';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +19,7 @@ export class UsersService {
     if (userAlreadExists) throw new ConflictException('User already exists');
 
     const user = this.usersRepository.create(newUser);
+    console.log(user);
     return await this.usersRepository.save(user);
   }
 }
