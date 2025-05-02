@@ -6,9 +6,21 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [AuthModule, UsersModule, ProductsModule, OrdersModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    ProductsModule,
+    OrdersModule,
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: 'mongodb+srv://leonardo:qwe@lanchonete-api.zc02wim.mongodb.net/?retryWrites=true&w=majority&appName=lanchonete-api',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: false, // Em produção, use migrations!
+    }),
+  ],
   controllers: [AppController],
   providers: [
     AppService,
