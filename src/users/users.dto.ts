@@ -43,7 +43,30 @@ export class CreateUsersDto {
   @IsEmail({}, { message: 'Email must be a valid email address' })
   email: string;
 
-  @IsNotEmpty({ message: 'Phone is required' })
+  @IsPhoneNumber('BR', { message: 'Phone must be a valid phone number' })
+  phone: string;
+
+  @ValidateNested()
+  @Type(() => AddressDto)
+  address: AddressDto;
+}
+
+export class UpdateUsersDto {
+  @IsNotEmpty({ message: 'Id is required' })
+  @IsString({ message: 'Id must be a string' })
+  _id: string;
+
+  @IsNotEmpty({ message: 'Name is required' })
+  @IsString({ message: 'Name must be a string' })
+  @MinLength(2, { message: 'Name must be at least 2 character long' })
+  @MaxLength(20, { message: 'Name must be at most 20 characters long' })
+  name: string;
+
+  @IsNotEmpty({ message: 'Email is required' })
+  @IsString({ message: 'Email must be a string' })
+  @IsEmail({}, { message: 'Email must be a valid email address' })
+  email: string;
+
   @IsPhoneNumber('BR', { message: 'Phone must be a valid phone number' })
   phone: string;
 
