@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -8,7 +8,6 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 class AddressDto {
   @IsString({ message: 'Street must be a string' })
