@@ -1,28 +1,29 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Patch,
-  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUsersDto, UpdateUsersDto } from './users.dto';
-import { Users } from './users.entity';
+import { GetUsersDto, UsersDto, UserUpdateDataDto } from './users.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('create')
-  @HttpCode(HttpStatus.CREATED)
-  async createUser(@Body() newUser: CreateUsersDto): Promise<Users> {
-    return await this.usersService.createUser(newUser);
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  async getUser(@Body() userEmail: GetUsersDto): Promise<UsersDto> {
+    return this.usersService.getUser(userEmail.email);
   }
 
-  @Patch('update')
+
+  @Patch('me')
   @HttpCode(HttpStatus.OK)
-  async updateUser(@Body() user: UpdateUsersDto): Promise<void> {
-    return await this.usersService.updateUser(user);
+  async updateUser(@Body() userUpdate: UserUpdateDataDto): Promise<void> {
+    return this.usersService.updateUser(userUpdate);
   }
+
 }

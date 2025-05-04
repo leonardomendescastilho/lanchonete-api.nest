@@ -1,56 +1,57 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUsersDto, UpdateUsersDto } from './users.dto';
 import { Users } from './users.entity';
+import { UserUpdateDataDto } from './users.dto';
 import { ObjectId } from 'mongodb';
+import * as bcrypt from 'bcrypt'; 
 
 @Injectable()
-export class UsersService {
+export class UsersService { 
   constructor(
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
   ) {}
 
-  async createUser(newUser: CreateUsersDto): Promise<Users> {
+  async getUser(email: string): Promise<Users> {
     try {
-      const userAlreadExists = await this.usersRepository.findOne({
-        where: { email: newUser.email },
-      });
+      const user = await this.usersRepository.findOne({ where: { email } });
 
-      if (userAlreadExists) throw new ConflictException('User already exists');
+      if (!user) throw new ConflictException('User not found');
 
-      const user = this.usersRepository.create(newUser);
-
-      return await this.usersRepository.save(user);
+      return user;
     } catch (error) {
-      console.error('Error create user:', error);
+      console.error('Error get user:', error);
       if (error instanceof ConflictException) {
         throw error;
       }
-      throw new ConflictException('Failed to create user');
+      throw new ConflictException('Failed to get user');
     }
   }
 
-  async updateUser(user: UpdateUsersDto): Promise<void> {
+  async updateUser(userUpdate: UserUpdateDataDto): Promise<void> {
     try {
-      const userId = new ObjectId(user._id);
-      const userExists = await this.usersRepository.findOne({
-        where: { _id: userId },
-      });
+      const { _id, ...userUpdateData } = userUpdate;
+      const userId = new ObjectId(_id);
+      const user = await this.usersRepository.findOne({ where: { _id: userId } });
 
-      if (!userExists) throw new ConflictException('User not found');
+      if (!user) throw new ConflictException('User not found');
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { _id, ...updateUserData } = user;
+      if (userUpdateData.password) {
+        const hashPassword = await bcrypt.hash(userUpdateData.password, 10);
+        userUpdateData.password = hashPassword;
+      } 
 
-      await this.usersRepository.update(userId, updateUserData);
+      const updatedUser = await this.usersRepository.update({ _id: userId }, userUpdateData);
+      
+      if (!updatedUser) throw new ConflictException('Failed to update user');
     } catch (error) {
-      console.error('Error updating user:', error);
+      console.error('Error get user:', error);
       if (error instanceof ConflictException) {
         throw error;
       }
-      throw new ConflictException('Failed to update user');
+      throw new ConflictException('Failed to get user');
     }
   }
+  
 }

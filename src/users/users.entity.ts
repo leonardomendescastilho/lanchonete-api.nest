@@ -13,7 +13,13 @@ export class Users {
   email: string;
 
   @Column()
+  password: string;
+
+  @Column()
   phone: string;
+
+  @Column()
+  role: string;
 
   @Column()
   address: {
@@ -22,4 +28,11 @@ export class Users {
     state: string;
     zip: string;
   };
+
+  @Column()
+  purchaseHistory: {
+    orderId: ObjectId;
+    purchaseDate: Date;
+    totalAmount: number;
+  }[];
 }
